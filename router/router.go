@@ -8,4 +8,6 @@ import (
 
 func RegisterRoutes(e *echo.Echo, transactionController *controller.TransactionController) {
 	e.POST("/transactions", transactionController.CreateTranscation)
+	e.GET("/transactions", transactionController.GetAllTransaction)
+	e.GET("/transactions/:id", transactionController.GetTransactionByID)
 }
