@@ -3,6 +3,7 @@ package controller
 import (
 	"pair/model"
 	"pair/repository"
+	"strconv"
 
 	"github.com/labstack/echo/v4"
 )
@@ -34,4 +35,35 @@ func (t *TransactionController) CreateTranscation(c echo.Context) error {
 	return c.JSON(200, echo.Map{
 		"message": "transaction created successfully",
 	})
+}
+
+func (t *TransactionController) GetAllTransaction(c echo.Context) error {
+	transaction, err := t.TransactionRepository.ReadAll()
+	if err != nil {
+		return c.JSON(400, echo.Map{
+			"message": "transaction not found",
+		})
+	}
+
+	return c.JSON(200, echo.Map{
+		"transactions": transaction,
+	})
+}
+
+func (t *TransactionController) GetTransactionByID(c echo.Context) error {
+	transactionID, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(400, echo.Map{
+			"message": "invalid transaction ID",
+		})
+	}
+
+	transaction, err := t.TransactionRepository.ReadID(transactionID)
+	if err != nil {
+		return c.JSON(400, echo.Map{
+			"message": "transaction not found",
+		})
+	}
+
+	return c.JSON(200, transaction)
 }
