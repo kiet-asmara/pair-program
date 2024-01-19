@@ -14,8 +14,8 @@ type TransactionRepository interface {
 	Create(transaction *model.Transaction) error
 	ReadAll() ([]*model.Transaction, error)
 	ReadID(transactionID int) (*model.Transaction, error)
-	// Update(transactionID int) (*model.Transaction, error)
-	// Delete(transactionID int) (*model.Transaction, error)
+	Update(transactionID string, input model.Transaction) error
+	Delete(transactionID string) error
 }
 
 type transactionRepository struct {
@@ -91,4 +91,44 @@ func (tr *transactionRepository) ReadID(transactionID int) (*model.Transaction, 
 	}
 
 	return &result, nil
+}
+
+func (tr *transactionRepository) Update(transactionID string, input model.Transaction) error {
+	ctx := context.TODO()
+
+	filter := bson.D{primitive.E{Key: "_id", Value: transactionID}}
+
+	update := bson.M{
+		"$set": bson.M{
+			"description": input.Description,
+			"amount":      input.Amount,
+		}}
+
+	// get collection
+	collection := tr.DB.Database("pair-program").Collection("transaction")
+
+	//Passing the bson.D{{}} as the filter matches  documents in the collection
+	_, err := collection.UpdateOne(ctx, filter, update)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (tr *transactionRepository) Delete(transactionID string) error {
+	ctx := context.TODO()
+
+	filter := bson.D{primitive.E{Key: "_id", Value: transactionID}}
+
+	// get collection
+	collection := tr.DB.Database("pair-program").Collection("transaction")
+
+	//Passing the bson.D{{}} as the filter matches  documents in the collection
+	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

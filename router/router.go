@@ -10,4 +10,6 @@ func RegisterRoutes(e *echo.Echo, transactionController *controller.TransactionC
 	e.POST("/transactions", transactionController.CreateTranscation)
 	e.GET("/transactions", transactionController.GetAllTransaction)
 	e.GET("/transactions/:id", transactionController.GetTransactionByID)
+	e.PUT("/transactions/:id", transactionController.UpdateTransaction)
+	e.DELETE("/transactions/:id", transactionController.Deletetransaction)
 }
