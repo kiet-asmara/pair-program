@@ -4,6 +4,7 @@ import (
 	"context"
 	"pair/model"
 	"strconv"
+	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -16,6 +17,7 @@ type TransactionRepository interface {
 	ReadID(transactionID int) (*model.Transaction, error)
 	Update(transactionID string, input model.Transaction) error
 	Delete(transactionID string) error
+	DeleteAllBeforeMidnight() error
 }
 
 type transactionRepository struct {
@@ -126,6 +128,27 @@ func (tr *transactionRepository) Delete(transactionID string) error {
 
 	//Passing the bson.D{{}} as the filter matches  documents in the collection
 	_, err := collection.DeleteOne(ctx, filter)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (tr *transactionRepository) DeleteAllBeforeMidnight() error {
+	ctx := context.TODO()
+
+	// Mendapatkan waktu tengah malam hari ini
+	now := time.Now()
+	midnight := time.Date(now.Year(), now.Month(), now.Day()+1, 0, 0, 0, 0, now.Location())
+
+	// Menetapkan kriteria pencarian untuk semua transaksi sebelum tengah malam
+	filter := bson.D{{"createdAt", bson.D{{"$lt", midnight}}}}
+
+	collection := tr.DB.Database("pair-program").Collection("transaction")
+
+	// Menghapus semua dokumen dengan filter createdAt < midnight
+	_, err := collection.DeleteMany(ctx, filter)
 	if err != nil {
 		return err
 	}

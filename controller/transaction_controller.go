@@ -1,20 +1,45 @@
 package controller
 
 import (
+	"fmt"
 	"pair/model"
 	"pair/repository"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/robfig/cron/v3"
 )
+
+type Scheduler struct {
+	Cron                  *cron.Cron
+	TransactionRepository repository.TransactionRepository
+}
 
 type TransactionController struct {
 	TransactionRepository repository.TransactionRepository
 }
 
 func NewTransactionController(transactionRepository repository.TransactionRepository) *TransactionController {
+	scheduler := &Scheduler{
+		Cron:                  cron.New(),
+		TransactionRepository: transactionRepository,
+	}
+
+	scheduler.Cron.AddFunc("0 0 * * *", scheduler.DeleteTransactions)
+
+	scheduler.Cron.Start()
+
 	return &TransactionController{
 		TransactionRepository: transactionRepository,
+	}
+}
+
+func (s *Scheduler) DeleteTransactions() {
+	fmt.Println("Deleting transactions at midnight...")
+
+	err := s.TransactionRepository.DeleteAllBeforeMidnight()
+	if err != nil {
+		fmt.Println("Failed to delete transactions:", err)
 	}
 }
 

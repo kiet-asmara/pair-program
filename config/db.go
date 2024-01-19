@@ -2,6 +2,7 @@ package config
 
 import (
 	"context"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -17,6 +18,10 @@ func InitDB() (mongoClient *mongo.Client, err error) {
 	if err != nil {
 		return nil, err
 	}
+
+	connectionOpts.SetMaxPoolSize(10)
+	connectionOpts.SetMinPoolSize(5)
+	connectionOpts.SetMaxConnIdleTime(10 * time.Second)
 
 	err = mongoClient.Ping(ctx, readpref.Primary())
 	if err != nil {
