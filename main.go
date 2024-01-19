@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"pair/config"
+	"pair/controller"
+	"pair/repository"
 	"pair/router"
 
 	"github.com/labstack/echo/v4"
@@ -22,7 +24,7 @@ func main() {
 
 	TransactionController := controller.NewTransactionController(TransactionRepository)
 
-	router.RegisterRoutes(e, TransactionController, TransactionController)
+	router.RegisterRoutes(e, TransactionController)
 
-	e.Start(":8080")
+	e.Start(":8081")
 }

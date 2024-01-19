@@ -7,5 +7,5 @@ import (
 )
 
 func RegisterRoutes(e *echo.Echo, transactionController *controller.TransactionController) {
-
+	e.POST("/transactions", transactionController.CreateTranscation)
 }

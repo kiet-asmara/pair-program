@@ -2,14 +2,12 @@ package model
 
 import (
 	"fmt"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Transaction struct {
-	Id          primitive.ObjectID `bson:"_id"`
-	Description string             `bson:"description"`
-	Amount      float64            `bson:"amount"`
+	Id          string  `bson:"_id" json:"id"`
+	Description string  `bson:"description" json:"description"`
+	Amount      float64 `bson:"amount" json:"amount"`
 }
 
 func (t Transaction) Run() {

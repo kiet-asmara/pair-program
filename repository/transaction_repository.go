@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fmt"
 	"pair/model"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -10,10 +9,10 @@ import (
 
 type TransactionRepository interface {
 	Create(transaction *model.Transaction) error
-	ReadAll(transactionID int) ([]*model.Transaction, error)
-	ReadID(transactionID int) (*model.Transaction, error)
-	Update(transactionID int) (*model.Transaction, error)
-	Delete(transactionID int) (*model.Transaction, error)
+	// ReadAll(transactionID int) ([]*model.Transaction, error)
+	// ReadID(transactionID int) (*model.Transaction, error)
+	// Update(transactionID int) (*model.Transaction, error)
+	// Delete(transactionID int) (*model.Transaction, error)
 }
 
 type transactionRepository struct {
@@ -30,12 +29,13 @@ func (tr *transactionRepository) Create(transaction *model.Transaction) error {
 	ctx := context.TODO()
 
 	// get collection
-	collection := mongoClient.Database("").Collection("")
+	collection := tr.DB.Database("pair-program").Collection("transaction")
 
 	// insert db
-	_, err := collection.InsertOne(ctx, data)
+	_, err := collection.InsertOne(ctx, transaction)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
+	return nil
 }
